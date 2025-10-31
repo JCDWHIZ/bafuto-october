@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "9505e075-d3c3-4e1d-85ef-79fc4af67d87",
+		"name": "chopWise",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30123754",
+		"_collection_link": "https://planetary-flare-838660.postman.co/workspace/My-Workspace~59878136-6230-467e-89a1-ef383a3ed91d/collection/30123754-9505e075-d3c3-4e1d-85ef-79fc4af67d87?action=share&source=collection_link&creator=30123754"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register a user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{authUrl}}/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"{{authUrl}}",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": []
+		},
+		{
+			"name": "Recipie",
+			"item": []
+		},
+		{
+			"name": "Test",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "authUrl",
+			"value": ""
+		},
+		{
+			"key": "recipieUrl",
+			"value": ""
+		},
+		{
+			"key": "userUrl",
+			"value": ""
+		}
+	]
+}
