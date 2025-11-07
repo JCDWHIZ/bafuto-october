@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/users", userRoutes);
-app.use("/api/recipe", recipieRoutes);
+app.use("/api/recipie", recipieRoutes);
 app.use("/api/auth", authRoutes);
 app.listen(port, () => {
   console.log("server is running at " + port);
