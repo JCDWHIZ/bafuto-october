@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
+import { connectDB } from "./config/db";
 // import dotenv from "dotenv"
 // dotenv.config()
 const userRoutes = require("./routes/user");
@@ -10,6 +11,7 @@ const port = process.env.PORT || "";
 const app = express();
 
 app.use(express.json());
+connectDB();
 
 app.use((req, res, next) => {
   console.log(
