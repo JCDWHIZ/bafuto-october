@@ -12,6 +12,6 @@ router.route("/profile").put(updateProfile);
 router.route("/profile").get(getProfile);
 router.route("/subscription/upgrade").post(upgradeSubscription);
 router.route("/subscription/cancel").post(cancelSubscription);
-router.route("/account").delete(deleteAccount);
+router.route("/account/:id").delete(deleteAccount);
 
 module.exports = router;

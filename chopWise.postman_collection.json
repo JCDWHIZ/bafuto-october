@@ -15,6 +15,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@gmaill.com\",\r\n    \"password\": \"test111\",\r\n    \"username\": \"test 110\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{baseUrl}}/{{authUrl}}/register",
 							"host": [
@@ -26,17 +35,272 @@
 							]
 						}
 					},
-					"response": []
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@gmaill.com\",\r\n    \"password\": \"test111\",\r\n    \"username\": \"test 110\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/{{authUrl}}/register",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"{{authUrl}}",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "261"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"105-PX2kuagmb/VXNyINTXpalmBvxDE\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 11 Nov 2025 11:58:02 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Account created successfully\",\n    \"user\": {\n        \"id\": \"f988273d-bd0b-487c-b5e9-49ce395a94db\",\n        \"username\": \"test 110\",\n        \"email\": \"test1@gmaill.com\",\n        \"password\": \"test111\",\n        \"updatedAt\": \"2025-11-11T11:58:02.270Z\",\n        \"createdAt\": \"2025-11-11T11:58:02.270Z\",\n        \"profilePic\": null\n    }\n}"
+						}
+					]
 				}
 			]
 		},
 		{
 			"name": "Users",
-			"item": []
+			"item": [
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test1@gmaill.com\",\r\n    \"username\": \"test111\",\r\n    \"password\": \"Jesse111ddddd\",\r\n    \"profilePic\": \"ajksdaksdjaskl\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/{{userUrl}}/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"{{userUrl}}",
+								"profile"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"test1@gmaill.com\",\r\n    \"username\": \"test111\",\r\n    \"password\": \"Jesse111ddddd\",\r\n    \"profilePic\": \"ajksdaksdjaskl\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/{{userUrl}}/profile",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"{{userUrl}}",
+										"profile"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "42"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"2a-t5BkG/uPC0n47t5uBLOFYq76Tzo\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 11 Nov 2025 12:33:28 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Profile updated successfully\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/{{userUrl}}/account/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"{{userUrl}}",
+								"account",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "b1382664-8daa-4281-8921-3cf993961732"
+								}
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/{{userUrl}}/account/:id",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"{{userUrl}}",
+										"account",
+										":id"
+									],
+									"variable": [
+										{
+											"key": "id",
+											"value": "b1382664-8daa-4281-8921-3cf993961732"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json",
+									"name": "Content-Type",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "Content-Length",
+									"value": "41"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"29-tuHWcqk+V8eT6/a4PhulrW6WqU8\""
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 11 Nov 2025 12:37:06 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Account deleted succeefully\"\n}"
+						}
+					]
+				}
+			]
 		},
 		{
 			"name": "Recipie",
-			"item": []
+			"item": [
+				{
+					"name": "Create recipie",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Test",
