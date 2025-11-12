@@ -15,3 +15,9 @@ export type forgotPasswordPayload = Omit<
   registerAccountPayload,
   "username" | "password"
 >;
+
+export type DecodedUser = {
+  id: string;
+  email: string;
+  username: string;
+};

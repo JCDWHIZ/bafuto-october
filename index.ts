@@ -1,7 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import { connectDB } from "./config/db";
 import { syncModels } from "./models";
+import { sendTestMail } from "./config/email";
 // import dotenv from "dotenv"
 // dotenv.config()
 const userRoutes = require("./routes/user");
@@ -24,6 +24,7 @@ app.use((req, res, next) => {
 app.use("/api/users", userRoutes);
 app.use("/api/recipie", recipieRoutes);
 app.use("/api/auth", authRoutes);
+// sendTestMail();
 app.listen(port, () => {
   console.log("server is running at " + port);
 });
