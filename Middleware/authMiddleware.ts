@@ -27,7 +27,7 @@ export const authMiddleware = async (
         id: decoded.id,
       },
     });
-    req.user = user;
+    req.user = user?.dataValues;
     next();
   } catch (error) {
     if (error instanceof TokenExpiredError) {

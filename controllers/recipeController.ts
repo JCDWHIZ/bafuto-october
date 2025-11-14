@@ -1,9 +1,52 @@
 import { Request, Response } from "express";
-import { createRecipiePayload } from "../types/recipe";
+import { createRecipiePayload, geminiContent } from "../types/recipe";
 import { geminiRecipeAI } from "../services/gemini";
+import path from "path";
+import cloudinary from "../config/cloudinaryConfig";
+import { Ingredient } from "../models/Ingredients";
+import { Recipie } from "../models/Recipie";
 
-export const uploadIngredient = async (req: Request, res: Response) => {
+// export const uploadIngredient = async (req: any, res: Response) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ error: "No file uploaded" }); // this checks if the file is included in the body
+//     }
+//     const imagePath = path.resolve(__dirname, "../uploads", req.file.filename); // this gets the file path
+
+//     const result = await cloudinary.uploader.upload(imagePath); // this uploads the image to cloudinary
+
+//     res.json({
+//       message: "File uploaded successfully",
+//       data: result,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: "Failed to upload ingredients",
+//       error,
+//     });
+//   }
+// };
+export const uploadIngredient = async (req: any, res: Response) => {
   try {
+    const { images } = req.body;
+    const user = req.user;
+    let results = [];
+    for (let index = 0; index < images.length; index++) {
+      const element = images[index];
+
+      const result = await cloudinary.uploader.upload(element);
+      await Ingredient.create({
+        imageBase64: element,
+        imageUrl: result.secure_url,
+        userId: user.id,
+      });
+      results.push(result);
+    }
+
+    res.json({
+      message: "File uploaded successfully",
+      data: results,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Failed to upload ingredients",
@@ -11,48 +54,71 @@ export const uploadIngredient = async (req: Request, res: Response) => {
     });
   }
 };
-export const createRecipie = async (req: Request, res: Response) => {
+export const createRecipie = async (req: any, res: Response) => {
   const { ingredients, prompt } = req.body as createRecipiePayload;
-
+  const user = req.user;
   try {
-    if (!prompt) {
-      return res.status(400).json({ error: "Prompt is required" });
-    }
-
     const recipePrompt = `
-  You are an AI chef for a Nigerian cooking app.
-  Using the user's prompt and the provided food images, generate a list of possible recipe ideas.
+You are an AI chef for a Nigerian cooking app.
 
-  ✅ Output format (MUST be valid JSON):
-  {
-    "recipes": [
+You will receive 1 or more food images (sent separately as inlineData).  
+First, analyze each image and identify what ingredient(s) it contains.
+
+Then, using the:
+- recognized ingredients from images  
+- user's cooking prompt  
+
+Generate possible Nigerian recipes.
+
+Output format (MUST be valid JSON):
+
+{
+  "recipes": [
+    {
+      "title": "string",
+      "description": "string",
+      "ingredients": [{ "name": "string", "quantity": "string" }],
+      "instructions": "string",
+      "prepTime": number,
+      "cookTime": number,
+      "imagePassed": ["recognized ingredient names"],
+      "servings": number,
+      "tags": ["string"]
+    }
+  ]
+}
+
+Rules:
+- Only use ingredients commonly available in Nigeria.
+- If multiple images/ingredients are provided, suggest 2–4 recipes.
+- No markdown, no explanations.
+- Always identify the ingredients in the images FIRST and use them as context.
+- "imagePassed" must list exactly what was visually recognized.
+- Keep instructions accurate, realistic, and authentic.
+
+User Prompt: ${prompt}
+`;
+
+    const cleanImages = ingredients.map((img) =>
+      img.replace(/^data:image\/\w+;base64,/, "")
+    );
+
+    const contents: geminiContent = [
       {
-        "title": "string",
-        "description": "string",
-        "ingredients": [{ "name": "string", "quantity": "string" }],
-        "instructions": "string",
-        "prepTime": number,
-        "cookTime": number,
-        "imagePassed": ["string"]
-        "servings": number,
-        "tags": ["string"]
-      }
-    ]
-  }
+        role: "user",
+        parts: [
+          { text: recipePrompt },
+          ...cleanImages.map((imgBase64) => ({
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: imgBase64,
+            },
+          })),
+        ],
+      },
+    ];
 
-  Rules:
-  - Only use ingredients commonly available in Nigeria.
-  - Suggest 2–4 possible recipes if multiple ingredients are provided.
-  - Do not include markdown, commentary, or code formatting.
-  - Keep instructions realistic and authentic.
-  - always recognize the image first and use the image as context
-  - inside the imagePassed object put the name of what you recognized from the images that is passed
-
-  Prompt: ${prompt}
-  Images (ingredients): ${ingredients?.join(", ") || "none"}
-  `;
-
-    const aiResponse = await geminiRecipeAI.generate(recipePrompt);
+    const aiResponse = await geminiRecipeAI.generateWithImages(contents);
 
     // 🧠 Try parsing Gemini’s JSON output
     let recipesData;
@@ -67,7 +133,6 @@ export const createRecipie = async (req: Request, res: Response) => {
     // Ensure it's an array of recipes
     const recipes = Array.isArray(recipesData.recipes)
       ? recipesData.recipes.map((r: any, index: number) => ({
-          id: index + 1,
           title: r.title,
           description: r.description,
           ingredients: r.ingredients,
@@ -76,12 +141,11 @@ export const createRecipie = async (req: Request, res: Response) => {
           cookTime: r.cookTime,
           servings: r.servings,
           tags: r.tags,
-          imagePassed: r.imagePassed,
-          image: ingredients?.[index] || ingredients?.[0] || null,
-          created_at: new Date(),
-          updated_at: new Date(),
+          userId: user.id,
         }))
       : [];
+
+    await Recipie.bulkCreate(recipes);
 
     return res.status(201).json({
       success: true,
@@ -159,3 +223,24 @@ function sanitizeAIResponse(aiText: string): string {
     .replace(/[^}\]]*$/, "") // remove anything after JSON ends
     .trim();
 }
+
+//     const prompt = `
+//     You are a vision analysis AI.
+
+// Analyze the image provided and describe ONLY what you can visually identify with high confidence.
+// Do not guess or assume anything not clearly visible.
+
+// For each recognized item, include:
+// - name: what the item is (e.g., fried plantain, tomatoes, palm oil)
+// - type: whether it’s an ingredient, meal, packaged item, or kitchen object
+// - description: short, factual summary of what you see
+// - confidence: percentage (0–100) of how sure you are
+
+// Return ONLY valid JSON in the format:
+// {
+//   "items": [
+//     { "name": "string", "type": "string", "description": "string", "confidence": number }
+//   ]
+// }
+
+// Image URL: <your image URL>

@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
 import {
+  DecodedUser,
   forgotPasswordPayload,
   loginPayload,
   registerAccountPayload,
   setPasswordPayload,
 } from "../types/auth";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { User } from "../models/User";
 import { sendResetPasswordEmail } from "../config/email";
 
@@ -86,7 +87,33 @@ export const login = async (req: Request, res: Response) => {
 export const setPassword = async (req: Request, res: Response) => {
   const { token, password } = req.body as setPasswordPayload;
   try {
+    const decoded = jwt.verify(token, jwtsecret) as DecodedUser;
+
+    const user = await User.findOne({
+      where: {
+        id: decoded.id,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        messsage: "User not found",
+      });
+    }
+
+    user.dataValues.password = password;
+    await user.save();
+
+    console.log(user);
+    return res.status(200).json({
+      message: "Password set successfully",
+    });
   } catch (error) {
+    if (error instanceof TokenExpiredError) {
+      res.status(401).json({
+        message: "Token expired",
+      });
+    }
     return res.status(500).json({
       message: "Failed to set Password",
       error,
@@ -123,7 +150,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     // send email
     await sendResetPasswordEmail(user.dataValues.email, frontendResetUrl, {
-      name: user.dataValues.name,
+      name: user.dataValues.username,
     });
 
     return res.status(200).json({

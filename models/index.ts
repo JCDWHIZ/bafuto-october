@@ -1,4 +1,20 @@
 import { sequelize } from "../config/db";
+import { Ingredient } from "./Ingredients";
+import { Recipie } from "./Recipie";
+import { User } from "./User";
+
+const models = {
+  User,
+  Recipie,
+  Ingredient,
+};
+
+// Set up associations
+Object.values(models).forEach((model: any) => {
+  if (model.associate) {
+    model.associate(models);
+  }
+});
 
 export const syncModels = async () => {
   try {
